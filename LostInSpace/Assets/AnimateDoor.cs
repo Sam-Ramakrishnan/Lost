@@ -5,70 +5,61 @@ using UnityEngine;
 
 public class AnimateDoor : MonoBehaviour
 {
-    private float yMotionSpeed = 1F;
+    // Sliding door
+    public enum OpenDirection { x, y, z }
+    public OpenDirection direction = OpenDirection.x;
+    public float openDistance = 5f; //How far should door slide (change direction by entering either a positive or a negative value)
+    public float openSpeed = 5.0f; //Increasing this value will make the door open faster
+    public Transform doorBody; //Door body Transform
 
+    bool open = false;
 
-    private float range = 2.0f;
+    Vector3 defaultDoorPosition;
 
-    private Transform t;
-    private Transform player;
-    private Transform init;
-    private Boolean opening = false;
-
-    private void Awake()
-    {
-        t = this.transform;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-    }
-
-    // Start is called before the first frame update
     void Start()
     {
-        init = this.transform;
+        if (doorBody)
+        {
+            defaultDoorPosition = doorBody.localPosition;
+        }
     }
 
-    // Update is called once per frame
+    // Main function
     void Update()
     {
-        t = this.transform;
-        player = GameObject.FindGameObjectWithTag("Player").transform;
-        Debug.Log("Distance is" + playerDistance());
+        if (!doorBody)
+            return;
 
-        if (opening)
+        if (direction == OpenDirection.x)
         {
-            transform.Translate(Vector3.right * yMotionSpeed * Time.deltaTime);
+            doorBody.localPosition = new Vector3(Mathf.Lerp(doorBody.localPosition.x, defaultDoorPosition.x + (open ? openDistance : 0), Time.deltaTime * openSpeed), doorBody.localPosition.y, doorBody.localPosition.z);
         }
-        else if (t.position != init.position)
+        else if (direction == OpenDirection.y)
         {
-            transform.Translate(Vector3.left * yMotionSpeed * Time.deltaTime);
+            doorBody.localPosition = new Vector3(doorBody.localPosition.x, Mathf.Lerp(doorBody.localPosition.y, defaultDoorPosition.y + (open ? openDistance : 0), Time.deltaTime * openSpeed), doorBody.localPosition.z);
         }
-
-
-
+        else if (direction == OpenDirection.z)
+        {
+            doorBody.localPosition = new Vector3(doorBody.localPosition.x, doorBody.localPosition.y, Mathf.Lerp(doorBody.localPosition.z, defaultDoorPosition.z + (open ? openDistance : 0), Time.deltaTime * openSpeed));
+        }
     }
 
-    void startOpening()
+    // Activate the Main function when Player enter the trigger area
+    void OnTriggerEnter(Collider other)
     {
-        opening = true;
-        transform.Translate(Vector3.right * yMotionSpeed * Time.deltaTime);
+        if (other.CompareTag("Player"))
+        {
+            open = true;
+
+        }
     }
 
-    private float playerDistance()
+    // Deactivate the Main function when Player exit the trigger area
+    void OnTriggerExit(Collider other)
     {
-
-        return Vector3.Distance(t.position, player.position);
+        if (other.CompareTag("Player"))
+        {
+            open = false;
+        }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        opening = true;
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        opening = false;
-        
-    }
-
-
 }
