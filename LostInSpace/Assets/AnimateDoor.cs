@@ -7,9 +7,9 @@ public class AnimateDoor : MonoBehaviour
 {
     // Sliding door
     public enum OpenDirection { x, y, z }
-    public OpenDirection direction = OpenDirection.x;
-    public float openDistance = 5f; //How far should door slide (change direction by entering either a positive or a negative value)
-    public float openSpeed = 5.0f; //Increasing this value will make the door open faster
+    public OpenDirection direction = OpenDirection.y;
+    public float openDistance = 8f; //How far should door slide (change direction by entering either a positive or a negative value)
+    public float openSpeed = 1.0f; //Increasing this value will make the door open faster
     public Transform doorBody; //Door body Transform
 
     bool open = false;
